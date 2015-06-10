@@ -8,19 +8,40 @@ require("babel/register")
 var Promise = require('es6-promise').Promise
 // just Node?
 // var fetch = require('node-fetch')
-// Browserify?
-// require('whatwg-fetch') //--> not a typo, don't store as a var
 
-// other stuff that we don't really use in our own code
-// var Pace = require("../bower_components/pace/pace.js")
+var $ = require('jquery'),
+    backbone = require('backbone'),
 
-// require your own libraries, too!
-// var Router = require('./app.js')
+var apikey =  'f2d4ec0a1ecb44ecb73a88b581af5c0f'
 
-// window.addEventListener('load', app)
+//inputs: state, apikey
 
-// function app() {
-    // start app
-    // new Router()
-// }
+var Capitol = backbone.Model.extend({
+    defaults: {
+        key: apikey
+    },
 
+    validate: function(attrs){
+        if (!attrs.state) return "No state provided"
+    },
+
+    initialize: function(){
+        this.on("request", () => {
+            console.log('requesting data')
+        })
+        this.on("sync", () => {
+            console.log('request finished')
+        })
+        this.on("error", (...args) => {
+            console.error(args)
+        })
+    },
+
+    urlRoot: function(){
+        return `http://capitolwords.org/api/1/phrases.json?entity_type=state&entity_value=${this.get('state_entry')}&apikey=${this.get('apikey')}?callback=?`
+    }
+})
+
+var capitolwords = new Capitol({state_entry: `TX`})
+
+console.log('capitolwords')
